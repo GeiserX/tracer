@@ -156,7 +156,7 @@ func (t *Tracer) ClearPids() {
 		}
 
 		if err := t.RemovePid(pid); err != nil {
-			LogError(err)
+			log.Error().Err(err).Send()
 		}
 		t.registeredPids.Delete(key)
 		return true
@@ -251,13 +251,4 @@ func (t *Tracer) targetGoPid(procfs string, pid uint32) error {
 	t.registeredPids.Store(pid, true)
 
 	return nil
-}
-
-func LogError(err error) {
-	var e *errors.Error
-	if errors.As(err, &e) {
-		log.Error().Str("stack", e.ErrorStack()).Send()
-	} else {
-		log.Error().Err(err).Send()
-	}
 }

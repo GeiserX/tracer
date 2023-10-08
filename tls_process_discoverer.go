@@ -32,11 +32,11 @@ func UpdateTargets(pods *[]v1.Pod) error {
 	// TODO: CAUSES INITIAL MEMORY SPIKE
 	for pid := range containerPids {
 		if err := tracer.AddSSLLibPid(tracer.procfs, pid); err != nil {
-			LogError(err)
+			log.Error().Err(err).Send()
 		}
 
 		if err := tracer.AddGoPid(tracer.procfs, pid); err != nil {
-			LogError(err)
+			log.Error().Err(err).Send()
 		}
 	}
 
