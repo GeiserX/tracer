@@ -10,7 +10,7 @@ import (
 	"github.com/hashicorp/golang-lru/simplelru"
 	"github.com/kubeshark/ebpf/perf"
 	"github.com/kubeshark/tracer/misc"
-	"github.com/kubeshark/tracer/misc/wcap"
+	"github.com/kubeshark/tracer/pkg/replay"
 	"github.com/rs/zerolog/log"
 )
 
@@ -27,21 +27,25 @@ type tlsPoller struct {
 	procfs         string
 	fdCache        *simplelru.LRU // Actual type is map[string]addressPair
 	evictedCounter int
-	sorter         *PacketSorter
+	replayer       *replay.Replayer
 }
 
 func newTlsPoller(
 	tls *Tracer,
 	procfs string,
 ) (*tlsPoller, error) {
-	sortedPackets := make(chan *wcap.SortedPacket, misc.PacketChannelBufferSize)
+	replayer, err := replay.NewReplayer(replay.DefaultRouteInterface(""))
+	if err != nil {
+		return nil, err
+	}
+
 	poller := &tlsPoller{
 		tls:          tls,
 		streams:      make(map[string]*tlsStream),
 		closeStreams: make(chan string, misc.TlsCloseChannelBufferSize),
 		chunksReader: nil,
 		procfs:       procfs,
-		sorter:       NewPacketSorter(sortedPackets),
+		replayer:     replayer,
 	}
 
 	fdCache, err := simplelru.NewLRU(fdCacheMaxItems, poller.fdCacheEvictCallback)
