@@ -77,7 +77,7 @@ func createTracer(streamsMap *TcpStreamMap) (err error) {
 	}
 
 	podList := kubernetes.GetTargetedPods()
-	if err = UpdateTargets(&podList); err != nil {
+	if err = UpdateTargets(podList); err != nil {
 		log.Error().Err(err).Send()
 		return
 	}
