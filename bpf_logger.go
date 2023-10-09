@@ -65,7 +65,7 @@ func (p *bpfLogger) poll() {
 				return
 			}
 
-			log.Error().Err(errors.Errorf("Error reading from bpf logger perf buffer, aboring logger! %w", err)).Send()
+			log.Error().Err(errors.Errorf("Error reading from bpf logger perf buffer, aborting logger! %w", err)).Send()
 			return
 		}
 
